@@ -9,9 +9,20 @@ Crypto miner monitoring system for WhatsMiner devices. Comprises:
 
 ### 1. Start the server stack
 
+**Option A: Build locally**
 ```bash
-cd miner-agent
+git clone https://github.com/miladkhalafi/MinerHub.git
+cd MinerHub
 docker-compose up -d
+```
+
+**Option B: Use pre-built image from GitHub Container Registry**
+```bash
+# Pull the image
+docker pull ghcr.io/miladkhalafi/minerhub:latest
+
+# Or use docker-compose with the image
+# Edit docker-compose.yml: change dashboard.build to dashboard.image: ghcr.io/miladkhalafi/minerhub:latest
 ```
 
 Then:

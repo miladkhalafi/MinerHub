@@ -2,14 +2,13 @@ FROM python:3.11-slim
 
 WORKDIR /app
 
-COPY requirements.txt .
+# Build context is project root (.)
+COPY server/requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-COPY app/ ./app/
+COPY server/app ./app/
 COPY agent/ ./agent/
-
-# Install frontend dependencies and build (if frontend exists)
-COPY frontend/ ./frontend/
+COPY server/frontend/ ./frontend/
 RUN if [ -f frontend/package.json ]; then \
       cd frontend && npm install && npm run build && cd ..; \
     fi
