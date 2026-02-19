@@ -1,3 +1,12 @@
+# Stage 1: Build frontend
+FROM node:20-alpine AS frontend-builder
+WORKDIR /frontend
+COPY server/frontend/package*.json ./
+RUN npm install
+COPY server/frontend/ ./
+RUN npm run build
+
+# Stage 2: Python app
 FROM python:3.11-slim
 
 WORKDIR /app
@@ -8,10 +17,7 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 COPY server/app ./app/
 COPY agent/ ./agent/
-COPY server/frontend/ ./frontend/
-RUN if [ -f frontend/package.json ]; then \
-      cd frontend && npm install && npm run build && cd ..; \
-    fi
+COPY --from=frontend-builder /frontend/dist ./frontend/dist
 
 EXPOSE 8000 3000
 
