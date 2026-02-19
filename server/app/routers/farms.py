@@ -80,12 +80,14 @@ async def get_farm(
     if agent:
         server_url = os.getenv("SERVER_URL", "http://localhost:8000").rstrip("/")
         install_script = f"curl -sSL '{server_url}/agents/install?token={agent.token}' | bash"
+        uninstall_script = f"curl -sSL '{server_url}/agents/uninstall?token={agent.token}' | bash"
         agent_data = {
             "id": agent.id,
             "token": agent.token,
             "name": agent.name,
             "last_seen": agent.last_seen.isoformat() if agent.last_seen else None,
             "install_script": install_script,
+            "uninstall_script": uninstall_script,
             "miners": [
                 {
                     "id": m.id,

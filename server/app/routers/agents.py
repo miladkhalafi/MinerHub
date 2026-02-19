@@ -108,6 +108,21 @@ async def get_install_script(
 set -e
 echo "Installing Miner Agent..."
 
+# Check requirements
+MISSING=""
+command -v python3 >/dev/null 2>&1 || MISSING="$MISSING python3"
+python3 -m venv --help >/dev/null 2>&1 || MISSING="$MISSING python3-venv"
+command -v curl >/dev/null 2>&1 || MISSING="$MISSING curl"
+command -v tar >/dev/null 2>&1 || MISSING="$MISSING tar"
+command -v sudo >/dev/null 2>&1 || MISSING="$MISSING sudo"
+command -v systemctl >/dev/null 2>&1 || MISSING="$MISSING systemd"
+
+if [ -n "$MISSING" ]; then
+  echo "Missing requirements:$MISSING"
+  echo "On Debian/Raspberry Pi OS, run: sudo apt update && sudo apt install -y python3 python3-venv curl tar"
+  exit 1
+fi
+
 # Create install dir
 INSTALL_DIR="${{INSTALL_DIR:-$HOME/miner-agent}}"
 mkdir -p "$INSTALL_DIR"

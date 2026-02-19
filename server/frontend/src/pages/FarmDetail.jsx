@@ -205,6 +205,13 @@ export default function FarmDetail() {
     }
   };
 
+  const copyUninstall = () => {
+    if (farm?.agent?.uninstall_script) {
+      navigator.clipboard?.writeText(farm.agent.uninstall_script);
+      alert("Copied to clipboard");
+    }
+  };
+
   if (loading) {
     return (
       <div className="flex items-center justify-center py-20">
@@ -287,14 +294,27 @@ export default function FarmDetail() {
               <p className="text-sm text-slate-400">
                 Status: {farm.agent.last_seen ? "Last seen " + new Date(farm.agent.last_seen).toLocaleString() : "Unknown"}
               </p>
-              <div className="flex flex-wrap items-center gap-2">
-                <code className="flex-1 min-w-0 text-xs text-slate-500 bg-slate-900/50 px-2 py-1.5 rounded truncate">
-                  {farm.agent.install_script || "curl ..."}
-                </code>
-                <Button variant="outline" size="sm" onClick={copyInstall} className="gap-1.5 shrink-0">
-                  <Copy className="h-4 w-4" />
-                  Copy
-                </Button>
+              <div className="space-y-2">
+                <div className="flex flex-wrap items-center gap-2">
+                  <span className="text-sm text-slate-400 shrink-0">Install:</span>
+                  <code className="flex-1 min-w-0 text-xs text-slate-500 bg-slate-900/50 px-2 py-1.5 rounded truncate">
+                    {farm.agent.install_script || "curl ..."}
+                  </code>
+                  <Button variant="outline" size="sm" onClick={copyInstall} className="gap-1.5 shrink-0">
+                    <Copy className="h-4 w-4" />
+                    Copy
+                  </Button>
+                </div>
+                <div className="flex flex-wrap items-center gap-2">
+                  <span className="text-sm text-slate-400 shrink-0">Uninstall:</span>
+                  <code className="flex-1 min-w-0 text-xs text-slate-500 bg-slate-900/50 px-2 py-1.5 rounded truncate">
+                    {farm.agent.uninstall_script || "curl ..."}
+                  </code>
+                  <Button variant="outline" size="sm" onClick={copyUninstall} className="gap-1.5 shrink-0">
+                    <Copy className="h-4 w-4" />
+                    Copy
+                  </Button>
+                </div>
               </div>
               <Button onClick={scanForMiners} disabled={scanning} className="gap-2">
                 <RefreshCw className={`h-4 w-4 ${scanning ? "animate-spin" : ""}`} />
