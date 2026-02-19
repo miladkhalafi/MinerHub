@@ -1,4 +1,6 @@
 """Farm CRUD endpoints."""
+import os
+
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 from pydantic import BaseModel
@@ -63,11 +65,14 @@ async def get_farm(farm_id: int, db: AsyncSession = Depends(get_db)):
     agent = await agent_service.get_agent_for_farm(db, farm_id)
     agent_data = None
     if agent:
+        server_url = os.getenv("SERVER_URL", "http://localhost:8000").rstrip("/")
+        install_script = f"curl -sSL '{server_url}/agents/install?token={agent.token}' | bash"
         agent_data = {
             "id": agent.id,
             "token": agent.token,
             "name": agent.name,
             "last_seen": agent.last_seen.isoformat() if agent.last_seen else None,
+            "install_script": install_script,
             "miners": [
                 {
                     "id": m.id,

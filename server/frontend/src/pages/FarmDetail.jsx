@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useParams, Link } from "react-router-dom";
 import { API } from "../App";
 
@@ -44,21 +44,33 @@ export default function FarmDetail() {
   const { id: farmId } = useParams();
   const [farm, setFarm] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const [scanning, setScanning] = useState(false);
   const [discovered, setDiscovered] = useState([]);
   const [editingMiner, setEditingMiner] = useState(null);
 
-  const load = () => {
+  const load = useCallback(() => {
+    setError(null);
     fetch(`${API}/farms/${farmId}`)
-      .then((r) => r.json())
-      .then(setFarm)
-      .catch(console.error)
+      .then((r) => {
+        if (!r.ok) throw new Error(r.status === 404 ? "Farm not found" : `Failed to load: ${r.status}`);
+        return r.json();
+      })
+      .then((data) => {
+        setFarm(data);
+        setError(null);
+      })
+      .catch((err) => {
+        console.error(err);
+        setError(err.message);
+        setFarm(null);
+      })
       .finally(() => setLoading(false));
-  };
+  }, [farmId]);
 
   useEffect(() => {
     load();
-  }, [farmId]);
+  }, [load]);
 
   const addAgent = async () => {
     try {
@@ -146,7 +158,9 @@ export default function FarmDetail() {
     }
   };
 
-  if (loading || !farm) return <div>Loading...</div>;
+  if (loading) return <div>Loading...</div>;
+  if (error) return <div className="card"><p style={{ color: "#f87171" }}>{error}</p><Link to="/">← Back to Farms</Link></div>;
+  if (!farm) return null;
 
   return (
     <div>
