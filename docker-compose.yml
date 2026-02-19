@@ -43,7 +43,7 @@ services:
       - "8000:8000"
       - "3000:3000"
     environment:
-      PYTHONPATH: /app
+      PYTHONPATH: /app/server
       DATABASE_URL: postgresql+asyncpg://miner:minerpass@postgres:5432/miner_agent
       INFLUXDB_URL: http://influxdb:8086
       INFLUXDB_TOKEN: minertoken1234567890
@@ -56,7 +56,8 @@ services:
       influxdb:
         condition: service_healthy
     volumes:
-      - ./server:/app
+      # Mount server into subpath so /app layout and built files are preserved
+      - ./server:/app/server
 
 volumes:
   postgres_data:

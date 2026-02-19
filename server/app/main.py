@@ -9,7 +9,7 @@ from fastapi.staticfiles import StaticFiles
 
 from app.database import init_db
 from app.routers import farms, agents, miners, ws, influx
-from app.models import Base  # noqa: F401 - ensure models are registered
+from app.models import Farm, Agent, Miner, Command  # noqa: F401 - ensure models are registered
 
 
 @asynccontextmanager
