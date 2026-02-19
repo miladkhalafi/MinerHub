@@ -222,54 +222,56 @@ export default function FarmDetail() {
         {!farm.agent?.miners?.length ? (
           <p>No miners. Scan for new miners above.</p>
         ) : (
-          <table>
-            <thead>
-              <tr>
-                <th>MAC</th>
-                <th>IP</th>
-                <th>Model</th>
-                <th>Web UI</th>
-                <th>Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {farm.agent.miners.map((m) => (
-                <tr key={m.id}>
-                  <td>{m.mac}</td>
-                  <td>{m.ip}</td>
-                  <td>{m.model || "-"}</td>
-                  <td>
-                    {m.ip ? (
-                      <a href={`http://${m.ip}`} target="_blank" rel="noreferrer">
-                        Open
-                      </a>
-                    ) : "-"}
-                  </td>
-                  <td>
-                    <button onClick={() => setEditingMiner(m)} style={{ marginRight: "0.5rem" }}>
-                      Edit
-                    </button>
-                    <button onClick={() => restartMiner(m.id)} style={{ marginRight: "0.5rem" }}>
-                      Restart
-                    </button>
-                    <button onClick={() => powerOffMiner(m.id)} className="danger" style={{ marginRight: "0.5rem" }}>
-                      Power Off
-                    </button>
-                  </td>
+          <>
+            <table>
+              <thead>
+                <tr>
+                  <th>MAC</th>
+                  <th>IP</th>
+                  <th>Model</th>
+                  <th>Web UI</th>
+                  <th>Actions</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-          {editingMiner && (
-            <div className="card" style={{ marginTop: "1rem" }}>
-              <h4>Edit Miner {editingMiner.mac}</h4>
-              <MinerEditForm
-                miner={editingMiner}
-                onSave={(data) => updateMiner(editingMiner.id, data)}
-                onCancel={() => setEditingMiner(null)}
-              />
-            </div>
-          )}
+              </thead>
+              <tbody>
+                {farm.agent.miners.map((m) => (
+                  <tr key={m.id}>
+                    <td>{m.mac}</td>
+                    <td>{m.ip}</td>
+                    <td>{m.model || "-"}</td>
+                    <td>
+                      {m.ip ? (
+                        <a href={`http://${m.ip}`} target="_blank" rel="noreferrer">
+                          Open
+                        </a>
+                      ) : "-"}
+                    </td>
+                    <td>
+                      <button onClick={() => setEditingMiner(m)} style={{ marginRight: "0.5rem" }}>
+                        Edit
+                      </button>
+                      <button onClick={() => restartMiner(m.id)} style={{ marginRight: "0.5rem" }}>
+                        Restart
+                      </button>
+                      <button onClick={() => powerOffMiner(m.id)} className="danger" style={{ marginRight: "0.5rem" }}>
+                        Power Off
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+            {editingMiner && (
+              <div className="card" style={{ marginTop: "1rem" }}>
+                <h4>Edit Miner {editingMiner.mac}</h4>
+                <MinerEditForm
+                  miner={editingMiner}
+                  onSave={(data) => updateMiner(editingMiner.id, data)}
+                  onCancel={() => setEditingMiner(null)}
+                />
+              </div>
+            )}
+          </>
         )}
       </div>
     </div>
