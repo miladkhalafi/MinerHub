@@ -16,6 +16,8 @@ services:
       retries: 5
 
   influxdb:
+    profiles:
+      - local-influxdb
     image: influxdb:2-alpine
     environment:
       DOCKER_INFLUXDB_INIT_MODE: setup
@@ -45,10 +47,10 @@ services:
     environment:
       PYTHONPATH: /app/server
       DATABASE_URL: postgresql+asyncpg://miner:minerpass@postgres:5432/miner_agent
-      INFLUXDB_URL: http://influxdb:8086
-      INFLUXDB_TOKEN: minertoken1234567890
-      INFLUXDB_ORG: miner-org
-      INFLUXDB_BUCKET: miner-metrics
+      INFLUXDB_URL: ${INFLUXDB_URL:-http://influxdb:8086}
+      INFLUXDB_TOKEN: ${INFLUXDB_TOKEN:-minertoken1234567890}
+      INFLUXDB_ORG: ${INFLUXDB_ORG:-miner-org}
+      INFLUXDB_BUCKET: ${INFLUXDB_BUCKET:-miner-metrics}
       SECRET_KEY: change-me-in-production-secret-key
       # Custom domain: set SERVER_URL (e.g. https://dashboard.myfarm.com) for install scripts
       # SERVER_URL: https://dashboard.example.com
@@ -56,8 +58,6 @@ services:
       # Bootstrap admin: ADMIN_EMAIL, ADMIN_PASSWORD (default: admin@localhost / admin)
     depends_on:
       postgres:
-        condition: service_healthy
-      influxdb:
         condition: service_healthy
     volumes:
       # Mount server into subpath so /app layout and built files are preserved

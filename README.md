@@ -13,6 +13,9 @@ Crypto miner monitoring system for WhatsMiner devices. Comprises:
 ```bash
 git clone https://github.com/miladkhalafi/MinerHub.git
 cd MinerHub
+# With local InfluxDB (default):
+docker-compose --profile local-influxdb up -d
+# With external InfluxDB: create .env with INFLUXDB_URL, INFLUXDB_TOKEN, etc., then:
 docker-compose up -d
 ```
 
@@ -52,6 +55,11 @@ Replace `YOUR_SERVER_IP` with your server IP (or hostname) and use the token fro
 
 With the agent running, open the farm in the dashboard and click **Scan for new miners**. Found miners can be registered and managed (restart, power off, edit worker/password).
 
+## InfluxDB configuration
+
+- **Local InfluxDB**: Run `docker-compose --profile local-influxdb up -d` to start the bundled InfluxDB.
+- **External/cloud InfluxDB**: Create a `.env` file (copy from `.env.example`) and set `INFLUXDB_URL`, `INFLUXDB_TOKEN`, `INFLUXDB_ORG`, and `INFLUXDB_BUCKET`. Then run `docker-compose up -d` (no profile). Agents installed via the install script will use the same InfluxDB config from the server.
+
 ## Architecture
 
 - **Farm**: Named group for one agent and its miners
@@ -66,7 +74,7 @@ With the agent running, open the farm in the dashboard and click **Scan for new 
 cd server
 pip install -r requirements.txt
 # Start PostgreSQL + InfluxDB via docker-compose
-docker-compose up -d postgres influxdb
+docker-compose --profile local-influxdb up -d postgres influxdb
 # Run API
 uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
 
