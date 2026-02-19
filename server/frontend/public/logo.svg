@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
+  <defs>
+    <linearGradient id="blade" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#38bdf8"/>
+      <stop offset="100%" stop-color="#0ea5e9"/>
+    </linearGradient>
+  </defs>
+  <!-- Left blade (horizontal) -->
+  <path d="M10 32 L26 16 L34 24 L18 40 Z" fill="url(#blade)" stroke="#38bdf8" stroke-width="1.5" stroke-linejoin="round"/>
+  <!-- Right blade (vertical) -->
+  <path d="M32 10 L48 26 L40 34 L24 18 Z" fill="url(#blade)" stroke="#38bdf8" stroke-width="1.5" stroke-linejoin="round"/>
+  <!-- Center handle -->
+  <rect x="28" y="28" width="8" height="8" rx="2" fill="#475569" transform="rotate(-45 32 32)"/>
+  <!-- Tech accents -->
+  <circle cx="18" cy="18" r="2" fill="#38bdf8"/>
+  <circle cx="46" cy="46" r="2" fill="#38bdf8"/>
+</svg>
