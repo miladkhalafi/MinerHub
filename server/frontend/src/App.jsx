@@ -6,7 +6,7 @@ import Farms from "./pages/Farms";
 import FarmDetail from "./pages/FarmDetail";
 import Login from "./pages/Login";
 import Users from "./pages/Users";
-import { LayoutDashboard, Users as UsersIcon, LogOut } from "lucide-react";
+import { Users as UsersIcon, LogOut } from "lucide-react";
 
 const API = "/api";
 
@@ -28,7 +28,7 @@ function Nav() {
           to="/"
           className="flex items-center gap-2 text-lg font-semibold text-slate-100 hover:text-sky-400 transition-colors"
         >
-          <LayoutDashboard className="h-5 w-5" />
+          <img src="/logo.png" alt="MinerHub" className="h-8" />
           Miner Agent
         </Link>
         {user && (

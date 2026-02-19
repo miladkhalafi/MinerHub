@@ -1,5 +1,7 @@
 # MinerHub
 
+![MinerHub Logo](assets/logo.png)
+
 Crypto miner monitoring system for WhatsMiner devices. Comprises:
 
 - **Server** (Docker): FastAPI backend, PostgreSQL, InfluxDB, Web dashboard
