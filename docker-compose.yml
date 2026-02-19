@@ -1,0 +1,63 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: miner
+      POSTGRES_PASSWORD: minerpass
+      POSTGRES_DB: miner_agent
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U miner -d miner_agent"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  influxdb:
+    image: influxdb:2-alpine
+    environment:
+      DOCKER_INFLUXDB_INIT_MODE: setup
+      DOCKER_INFLUXDB_INIT_USERNAME: admin
+      DOCKER_INFLUXDB_INIT_PASSWORD: adminpassword
+      DOCKER_INFLUXDB_INIT_ORG: miner-org
+      DOCKER_INFLUXDB_INIT_BUCKET: miner-metrics
+      DOCKER_INFLUXDB_INIT_ADMIN_TOKEN: minertoken1234567890
+    volumes:
+      - influxdb_data:/var/lib/influxdb2
+      - influxdb_config:/etc/influxdb2
+    ports:
+      - "8086:8086"
+    healthcheck:
+      test: ["CMD", "influx", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  dashboard:
+    build:
+      context: .
+      dockerfile: server/Dockerfile
+    ports:
+      - "8000:8000"
+      - "3000:3000"
+    environment:
+      DATABASE_URL: postgresql+asyncpg://miner:minerpass@postgres:5432/miner_agent
+      INFLUXDB_URL: http://influxdb:8086
+      INFLUXDB_TOKEN: minertoken1234567890
+      INFLUXDB_ORG: miner-org
+      INFLUXDB_BUCKET: miner-metrics
+      SECRET_KEY: change-me-in-production-secret-key
+    depends_on:
+      postgres:
+        condition: service_healthy
+      influxdb:
+        condition: service_healthy
+    volumes:
+      - ./server:/app
+
+volumes:
+  postgres_data:
+  influxdb_data:
+  influxdb_config:

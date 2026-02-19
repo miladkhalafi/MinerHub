@@ -1,0 +1,4 @@
+whatsminer>=0.1.0
+influxdb-client>=1.38.0
+websockets>=12.0
+aiohttp>=3.9.0
