@@ -1,10 +1,10 @@
 import { useState, useEffect, useCallback } from "react";
-import { useParams, Link } from "react-router-dom";
+import { useParams, Link, useNavigate } from "react-router-dom";
 import { apiFetch } from "../utils/api";
 import { Button } from "../components/ui/button";
 import { Input } from "../components/ui/input";
 import { Card, CardHeader, CardTitle, CardContent } from "../components/ui/card";
-import { ArrowLeft, Copy, Plus, RefreshCw, Edit2, Power, PowerOff, ExternalLink } from "lucide-react";
+import { ArrowLeft, Copy, Plus, RefreshCw, Edit2, Power, PowerOff, ExternalLink, Trash2 } from "lucide-react";
 
 function MinerEditForm({ miner, onSave, onCancel }) {
   const [worker1, setWorker1] = useState(miner.worker1 || "");
@@ -48,12 +48,16 @@ function MinerEditForm({ miner, onSave, onCancel }) {
 
 export default function FarmDetail() {
   const { id: farmId } = useParams();
+  const navigate = useNavigate();
   const [farm, setFarm] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [scanning, setScanning] = useState(false);
   const [discovered, setDiscovered] = useState([]);
   const [editingMiner, setEditingMiner] = useState(null);
+  const [editingFarm, setEditingFarm] = useState(false);
+  const [farmName, setFarmName] = useState("");
+  const [deleting, setDeleting] = useState(false);
 
   const load = useCallback(() => {
     setError(null);
@@ -155,6 +159,45 @@ export default function FarmDetail() {
     }
   };
 
+  const startEditFarm = () => {
+    setFarmName(farm.name);
+    setEditingFarm(true);
+  };
+
+  const cancelEditFarm = () => {
+    setEditingFarm(false);
+    setFarmName("");
+  };
+
+  const saveFarm = async (e) => {
+    e.preventDefault();
+    if (!farmName.trim()) return;
+    try {
+      const r = await apiFetch(`/farms/${farmId}`, {
+        method: "PATCH",
+        body: JSON.stringify({ name: farmName.trim() }),
+      });
+      const data = await r.json();
+      setFarm((prev) => ({ ...prev, ...data }));
+      cancelEditFarm();
+    } catch (e) {
+      console.error(e);
+    }
+  };
+
+  const deleteFarm = async () => {
+    if (!window.confirm(`Delete farm "${farm.name}"? This will remove all agents and miners.`)) return;
+    setDeleting(true);
+    try {
+      await apiFetch(`/farms/${farmId}`, { method: "DELETE" });
+      navigate("/");
+    } catch (e) {
+      console.error(e);
+    } finally {
+      setDeleting(false);
+    }
+  };
+
   const copyInstall = () => {
     if (farm?.agent?.install_script) {
       navigator.clipboard?.writeText(farm.agent.install_script);
@@ -196,8 +239,34 @@ export default function FarmDetail() {
         </Link>
       </div>
 
-      <div>
-        <h1 className="text-2xl font-semibold text-slate-100">{farm.name}</h1>
+      <div className="flex items-center gap-4 flex-wrap">
+        {editingFarm ? (
+          <form onSubmit={saveFarm} className="flex gap-2 items-center">
+            <Input
+              value={farmName}
+              onChange={(e) => setFarmName(e.target.value)}
+              placeholder="Farm name"
+              className="max-w-xs"
+              autoFocus
+            />
+            <Button type="submit" size="sm">Save</Button>
+            <Button type="button" variant="outline" size="sm" onClick={cancelEditFarm}>Cancel</Button>
+          </form>
+        ) : (
+          <>
+            <h1 className="text-2xl font-semibold text-slate-100">{farm.name}</h1>
+            <div className="flex gap-2">
+              <Button variant="outline" size="sm" onClick={startEditFarm} className="gap-1.5">
+                <Edit2 className="h-3.5 w-3.5" />
+                Edit Farm
+              </Button>
+              <Button variant="destructive" size="sm" onClick={deleteFarm} disabled={deleting} className="gap-1.5">
+                <Trash2 className="h-3.5 w-3.5" />
+                {deleting ? "Deleting..." : "Delete Farm"}
+              </Button>
+            </div>
+          </>
+        )}
       </div>
 
       <Card>
