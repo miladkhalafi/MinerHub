@@ -18,6 +18,11 @@ def _get_server_url() -> str:
     return os.getenv("SERVER_URL", "http://localhost:8000").rstrip("/")
 
 
+def _get_api_url() -> str:
+    """API base URL (server + /api) for agent install scripts and WebSocket."""
+    return f"{_get_server_url()}/api"
+
+
 # --- Agent registration ---
 
 @router.post("/farms/{farm_id}/agents", status_code=201)
@@ -40,13 +45,14 @@ async def register_agent(
         )
 
     agent = await agent_service.create_agent(db, farm_id)
+    api_url = _get_api_url()
     return {
         "id": agent.id,
         "token": agent.token,
-        "install_url": f"{_get_server_url()}/agents/install?token={agent.token}",
-        "uninstall_url": f"{_get_server_url()}/agents/uninstall?token={agent.token}",
-        "install_script": f"curl -sSL '{_get_server_url()}/agents/install?token={agent.token}' | bash",
-        "uninstall_script": f"curl -sSL '{_get_server_url()}/agents/uninstall?token={agent.token}' | bash",
+        "install_url": f"{api_url}/agents/install?token={agent.token}",
+        "uninstall_url": f"{api_url}/agents/uninstall?token={agent.token}",
+        "install_script": f"curl -sSL '{api_url}/agents/install?token={agent.token}' | bash",
+        "uninstall_script": f"curl -sSL '{api_url}/agents/uninstall?token={agent.token}' | bash",
     }
 
 
@@ -98,7 +104,7 @@ async def get_install_script(
     if not agent:
         raise HTTPException(status_code=404, detail="Invalid or expired token")
 
-    server_url = _get_server_url()
+    api_url = _get_api_url()
     influx_url = os.getenv("INFLUXDB_URL", "http://localhost:8086").rstrip("/")
     influx_token = os.getenv("INFLUXDB_TOKEN", "minertoken1234567890")
     influx_org = os.getenv("INFLUXDB_ORG", "miner-org")
@@ -137,7 +143,7 @@ python3 -m venv venv
 mkdir -p src
 cat > src/.env << 'ENVEOF'
 AGENT_TOKEN={agent.token}
-SERVER_URL={server_url}
+SERVER_URL={api_url}
 INFLUXDB_URL={influx_url}
 INFLUXDB_TOKEN={influx_token}
 INFLUXDB_ORG={influx_org}
@@ -145,7 +151,7 @@ INFLUXDB_BUCKET={influx_bucket}
 ENVEOF
 
 # Download and extract agent source
-curl -sSL "{server_url}/agents/download?token={agent.token}" -o /tmp/agent.tar.gz
+curl -sSL "{api_url}/agents/download?token={agent.token}" -o /tmp/agent.tar.gz
 tar -xzf /tmp/agent.tar.gz -C "$INSTALL_DIR" 2>/dev/null || true
 rm -f /tmp/agent.tar.gz
 # Fallback: create minimal runner if download failed
@@ -268,8 +274,8 @@ async def get_agent(
         "farm_name": agent.farm.name if agent.farm else None,
         "name": agent.name,
         "last_seen": agent.last_seen.isoformat() if agent.last_seen else None,
-        "install_script": f"curl -sSL '{_get_server_url()}/agents/install?token={agent.token}' | bash",
-        "uninstall_script": f"curl -sSL '{_get_server_url()}/agents/uninstall?token={agent.token}' | bash",
+        "install_script": f"curl -sSL '{_get_api_url()}/agents/install?token={agent.token}' | bash",
+        "uninstall_script": f"curl -sSL '{_get_api_url()}/agents/uninstall?token={agent.token}' | bash",
         "miners": [
             {
                 "id": m.id,

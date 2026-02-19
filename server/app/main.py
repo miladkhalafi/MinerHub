@@ -51,13 +51,13 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-app.include_router(auth.router)
-app.include_router(users.router)
-app.include_router(farms.router)
-app.include_router(agents.router)
-app.include_router(miners.router)
-app.include_router(ws.router)
-app.include_router(influx.router)
+app.include_router(auth.router, prefix="/api")
+app.include_router(users.router, prefix="/api")
+app.include_router(farms.router, prefix="/api")
+app.include_router(agents.router, prefix="/api")
+app.include_router(miners.router, prefix="/api")
+app.include_router(ws.router, prefix="/api")
+app.include_router(influx.router, prefix="/api")
 
 # Serve frontend static files if built
 _frontend_dist = Path(__file__).parent.parent / "frontend" / "dist"

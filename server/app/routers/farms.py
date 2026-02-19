@@ -78,9 +78,10 @@ async def get_farm(
     agent = await agent_service.get_agent_for_farm(db, farm_id)
     agent_data = None
     if agent:
-        server_url = os.getenv("SERVER_URL", "http://localhost:8000").rstrip("/")
-        install_script = f"curl -sSL '{server_url}/agents/install?token={agent.token}' | bash"
-        uninstall_script = f"curl -sSL '{server_url}/agents/uninstall?token={agent.token}' | bash"
+        from app.routers.agents import _get_api_url
+        api_url = _get_api_url()
+        install_script = f"curl -sSL '{api_url}/agents/install?token={agent.token}' | bash"
+        uninstall_script = f"curl -sSL '{api_url}/agents/uninstall?token={agent.token}' | bash"
         agent_data = {
             "id": agent.id,
             "token": agent.token,

@@ -46,7 +46,7 @@ Then:
 On your Raspberry Pi (same network as the miners):
 
 ```bash
-curl -sSL 'http://YOUR_SERVER_IP:8000/agents/install?token=YOUR_TOKEN' | bash
+curl -sSL 'http://YOUR_SERVER_IP:8000/api/agents/install?token=YOUR_TOKEN' | bash
 ```
 
 Replace `YOUR_SERVER_IP` with your server IP (or hostname) and use the token from step 2.
@@ -91,7 +91,7 @@ cd agent
 pip install -r requirements.txt
 # Set env vars
 export AGENT_TOKEN=your_token
-export SERVER_URL=http://your-server:8000
+export SERVER_URL=http://your-server:8000/api
 export INFLUXDB_URL=http://your-server:8086
 export INFLUXDB_TOKEN=minertoken1234567890
 export INFLUXDB_ORG=miner-org
@@ -101,14 +101,16 @@ python src/main.py
 
 ## API overview
 
-- `GET/POST /farms` – List/create farms
-- `GET/POST /farms/{id}/agents` – Get agents, register agent
-- `GET /agents/install?token=` – Install script
-- `GET /agents/uninstall?token=` – Uninstall script
-- `POST /agents/{id}/scan` – Trigger scan for new miners
-- `GET/PATCH /miners` – List/update miners
-- `POST /miners/{id}/restart` – Restart miner
-- `POST /miners/{id}/power_off` – Power off miner
+All API endpoints are under `/api`:
+
+- `GET/POST /api/farms` – List/create farms
+- `GET/POST /api/farms/{id}/agents` – Get agents, register agent
+- `GET /api/agents/install?token=` – Install script
+- `GET /api/agents/uninstall?token=` – Uninstall script
+- `POST /api/agents/{id}/scan` – Trigger scan for new miners
+- `GET/PATCH /api/miners` – List/update miners
+- `POST /api/miners/{id}/restart` – Restart miner
+- `POST /api/miners/{id}/power_off` – Power off miner
 
 ## Security notes
 

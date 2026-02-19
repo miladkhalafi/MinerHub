@@ -8,7 +8,7 @@ import Login from "./pages/Login";
 import Users from "./pages/Users";
 import { LayoutDashboard, Users as UsersIcon, LogOut } from "lucide-react";
 
-const API = "";  // Same origin when proxied
+const API = "/api";
 
 export { API };
 
