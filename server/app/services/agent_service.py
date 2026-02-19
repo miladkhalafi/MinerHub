@@ -64,8 +64,11 @@ async def list_agents(db: AsyncSession, farm_id: int | None = None) -> list[Agen
     return list(result.scalars().all())
 
 
-async def update_agent_last_seen(db: AsyncSession, agent: Agent) -> None:
-    """Update agent last_seen timestamp."""
+async def update_agent_last_seen(db: AsyncSession, agent: Agent | int) -> None:
+    """Update agent last_seen timestamp. Accepts Agent or agent_id."""
     from datetime import datetime, timezone
-    agent.last_seen = datetime.now(timezone.utc)
-    await db.flush()
+    if isinstance(agent, int):
+        agent = await get_agent_by_id(db, agent)
+    if agent:
+        agent.last_seen = datetime.now(timezone.utc)
+        await db.flush()

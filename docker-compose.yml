@@ -50,6 +50,10 @@ services:
       INFLUXDB_ORG: miner-org
       INFLUXDB_BUCKET: miner-metrics
       SECRET_KEY: change-me-in-production-secret-key
+      # Custom domain: set SERVER_URL (e.g. https://dashboard.myfarm.com) for install scripts
+      # SERVER_URL: https://dashboard.example.com
+      # CORS_ORIGINS: https://dashboard.example.com
+      # Bootstrap admin: ADMIN_EMAIL, ADMIN_PASSWORD (default: admin@localhost / admin)
     depends_on:
       postgres:
         condition: service_healthy

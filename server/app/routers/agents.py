@@ -6,6 +6,8 @@ from pydantic import BaseModel
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.database import get_db
+from app.auth import get_current_user
+from app.models import User
 from app.services import agent_service, farm_service
 from app.models import Agent
 
@@ -19,7 +21,11 @@ def _get_server_url() -> str:
 # --- Agent registration ---
 
 @router.post("/farms/{farm_id}/agents", status_code=201)
-async def register_agent(farm_id: int, db: AsyncSession = Depends(get_db)):
+async def register_agent(
+    farm_id: int,
+    db: AsyncSession = Depends(get_db),
+    user: User = Depends(get_current_user),
+):
     """Register a new agent for a farm. Returns token and agent_id."""
     farm = await farm_service.get_farm(db, farm_id)
     if not farm:
@@ -214,6 +220,7 @@ async def get_agent_me(
 async def list_agents(
     farm_id: int | None = Query(None, description="Filter by farm"),
     db: AsyncSession = Depends(get_db),
+    user: User = Depends(get_current_user),
 ):
     """List agents."""
     agents = await agent_service.list_agents(db, farm_id)
@@ -230,7 +237,11 @@ async def list_agents(
 
 
 @router.get("/agents/{agent_id}")
-async def get_agent(agent_id: int, db: AsyncSession = Depends(get_db)):
+async def get_agent(
+    agent_id: int,
+    db: AsyncSession = Depends(get_db),
+    user: User = Depends(get_current_user),
+):
     """Get agent detail with miners."""
     agent = await agent_service.get_agent_by_id(db, agent_id)
     if not agent:
@@ -272,6 +283,7 @@ async def queue_command(
     agent_id: int,
     command: CommandCreate,
     db: AsyncSession = Depends(get_db),
+    user: User = Depends(get_current_user),
 ):
     """Queue a command for the agent (restart, update_worker, power_off, power_on, get_realtime)."""
     from app.models import Command, CommandStatus, CommandType
@@ -303,7 +315,11 @@ async def queue_command(
 
 
 @router.post("/agents/{agent_id}/scan")
-async def trigger_scan(agent_id: int, db: AsyncSession = Depends(get_db)):
+async def trigger_scan(
+    agent_id: int,
+    db: AsyncSession = Depends(get_db),
+    user: User = Depends(get_current_user),
+):
     """Trigger scan for new miners. Agent must be online (WebSocket) to respond."""
     from app.models import Command, CommandStatus, CommandType
 
@@ -346,6 +362,7 @@ async def register_discovered_miners(
     agent_id: int,
     miners: list[RegisterMinerRequest],
     db: AsyncSession = Depends(get_db),
+    user: User = Depends(get_current_user),
 ):
     """Register discovered miners to the agent (add to farm)."""
     from app.services import miner_service

@@ -6,6 +6,8 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from pydantic import BaseModel
 
 from app.database import get_db
+from app.auth import get_current_user
+from app.models import User
 from app.services import farm_service
 
 router = APIRouter(prefix="/farms", tags=["farms"])
@@ -29,7 +31,10 @@ class FarmResponse(BaseModel):
 
 
 @router.get("", response_model=list[FarmResponse])
-async def list_farms(db: AsyncSession = Depends(get_db)):
+async def list_farms(
+    db: AsyncSession = Depends(get_db),
+    user: User = Depends(get_current_user),
+):
     """List all farms."""
     farms = await farm_service.list_farms(db)
     return [
@@ -43,7 +48,11 @@ async def list_farms(db: AsyncSession = Depends(get_db)):
 
 
 @router.post("", response_model=FarmResponse, status_code=201)
-async def create_farm(data: FarmCreate, db: AsyncSession = Depends(get_db)):
+async def create_farm(
+    data: FarmCreate,
+    db: AsyncSession = Depends(get_db),
+    user: User = Depends(get_current_user),
+):
     """Create a new farm."""
     farm = await farm_service.create_farm(db, data.name)
     return FarmResponse(
@@ -54,7 +63,11 @@ async def create_farm(data: FarmCreate, db: AsyncSession = Depends(get_db)):
 
 
 @router.get("/{farm_id}")
-async def get_farm(farm_id: int, db: AsyncSession = Depends(get_db)):
+async def get_farm(
+    farm_id: int,
+    db: AsyncSession = Depends(get_db),
+    user: User = Depends(get_current_user),
+):
     """Get farm detail with agent and miners."""
     from app.services import agent_service
 
@@ -96,7 +109,12 @@ async def get_farm(farm_id: int, db: AsyncSession = Depends(get_db)):
 
 
 @router.patch("/{farm_id}", response_model=FarmResponse)
-async def update_farm(farm_id: int, data: FarmUpdate, db: AsyncSession = Depends(get_db)):
+async def update_farm(
+    farm_id: int,
+    data: FarmUpdate,
+    db: AsyncSession = Depends(get_db),
+    user: User = Depends(get_current_user),
+):
     """Update farm name."""
     farm = await farm_service.get_farm(db, farm_id)
     if not farm:
@@ -110,7 +128,11 @@ async def update_farm(farm_id: int, data: FarmUpdate, db: AsyncSession = Depends
 
 
 @router.delete("/{farm_id}", status_code=204)
-async def delete_farm(farm_id: int, db: AsyncSession = Depends(get_db)):
+async def delete_farm(
+    farm_id: int,
+    db: AsyncSession = Depends(get_db),
+    user: User = Depends(get_current_user),
+):
     """Delete farm and cascade to agents/miners."""
     farm = await farm_service.get_farm(db, farm_id)
     if not farm:

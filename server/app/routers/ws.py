@@ -43,7 +43,8 @@ async def agent_websocket(websocket: WebSocket):
 
             if msg.get("type") == "ping":
                 async with async_session_maker() as db:
-                    await agent_service.update_agent_last_seen(db, agent)
+                    await agent_service.update_agent_last_seen(db, agent_id)
+                    await db.commit()
                 await websocket.send_json({"type": "pong"})
                 continue
 

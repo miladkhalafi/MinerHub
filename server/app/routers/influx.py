@@ -1,12 +1,16 @@
 """Optional InfluxDB metrics query endpoint for charts."""
 import os
-from fastapi import APIRouter, Query
+from fastapi import APIRouter, Depends, Query
+
+from app.auth import get_current_user
+from app.models import User
 
 router = APIRouter(prefix="/metrics", tags=["metrics"])
 
 
 @router.get("")
 async def query_metrics(
+    user: User = Depends(get_current_user),
     farm_id: str | None = Query(None),
     miner_mac: str | None = Query(None),
     limit: int = Query(100, le=1000),

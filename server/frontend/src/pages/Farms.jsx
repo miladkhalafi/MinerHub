@@ -1,6 +1,10 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { API } from "../App";
+import { apiFetch } from "../utils/api";
+import { Button } from "../components/ui/button";
+import { Input } from "../components/ui/input";
+import { Card, CardHeader, CardTitle, CardContent } from "../components/ui/card";
+import { Plus, ChevronRight } from "lucide-react";
 
 export default function Farms() {
   const [farms, setFarms] = useState([]);
@@ -9,7 +13,7 @@ export default function Farms() {
   const [creating, setCreating] = useState(false);
 
   useEffect(() => {
-    fetch(`${API}/farms`)
+    apiFetch("/farms")
       .then((r) => r.json())
       .then(setFarms)
       .catch(console.error)
@@ -21,9 +25,8 @@ export default function Farms() {
     if (!name.trim() || creating) return;
     setCreating(true);
     try {
-      const r = await fetch(`${API}/farms`, {
+      const r = await apiFetch("/farms", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ name: name.trim() }),
       });
       const data = await r.json();
@@ -36,42 +39,68 @@ export default function Farms() {
     }
   };
 
-  if (loading) return <div>Loading...</div>;
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center py-20">
+        <div className="animate-pulse text-slate-500">Loading farms...</div>
+      </div>
+    );
+  }
 
   return (
-    <div>
-      <div className="card">
-        <h2 style={{ marginTop: 0 }}>Farms</h2>
-        <form onSubmit={createFarm} style={{ display: "flex", gap: "0.5rem", marginBottom: "1rem" }}>
-          <input
-            placeholder="Farm name"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            style={{ flex: 1, maxWidth: 300 }}
-          />
-          <button type="submit" className="primary" disabled={creating || !name.trim()}>
-            Add Farm
-          </button>
-        </form>
-        <table>
-          <thead>
-            <tr>
-              <th>Name</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {farms.map((f) => (
-              <tr key={f.id}>
-                <td>{f.name}</td>
-                <td>
-                  <Link to={`/farms/${f.id}`}>View</Link>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+    <div className="space-y-6">
+      <div>
+        <h1 className="text-2xl font-semibold text-slate-100">Farms</h1>
+        <p className="mt-1 text-sm text-slate-500">Manage your mining farms and agents</p>
       </div>
+
+      <Card>
+        <CardHeader>
+          <CardTitle>Add Farm</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <form onSubmit={createFarm} className="flex gap-3 flex-wrap items-end">
+            <div className="flex-1 min-w-[200px] space-y-2">
+              <label className="text-sm font-medium text-slate-400">Farm name</label>
+              <Input
+                placeholder="e.g. North Warehouse"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+              />
+            </div>
+            <Button type="submit" disabled={creating || !name.trim()} className="gap-2">
+              <Plus className="h-4 w-4" />
+              Add Farm
+            </Button>
+          </form>
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle>All Farms</CardTitle>
+        </CardHeader>
+        <CardContent>
+          {farms.length === 0 ? (
+            <div className="py-12 text-center text-slate-500">
+              No farms yet. Add one above to get started.
+            </div>
+          ) : (
+            <div className="divide-y divide-slate-700/50">
+              {farms.map((f) => (
+                <Link
+                  key={f.id}
+                  to={`/farms/${f.id}`}
+                  className="flex items-center justify-between py-4 hover:bg-slate-800/30 -mx-2 px-2 rounded-md transition-colors group"
+                >
+                  <span className="font-medium text-slate-200">{f.name}</span>
+                  <ChevronRight className="h-5 w-5 text-slate-500 group-hover:text-sky-400 transition-colors" />
+                </Link>
+              ))}
+            </div>
+          )}
+        </CardContent>
+      </Card>
     </div>
   );
 }

@@ -1,6 +1,10 @@
 import { useState, useEffect, useCallback } from "react";
 import { useParams, Link } from "react-router-dom";
-import { API } from "../App";
+import { apiFetch } from "../utils/api";
+import { Button } from "../components/ui/button";
+import { Input } from "../components/ui/input";
+import { Card, CardHeader, CardTitle, CardContent } from "../components/ui/card";
+import { ArrowLeft, Copy, Plus, RefreshCw, Edit2, Power, PowerOff, ExternalLink } from "lucide-react";
 
 function MinerEditForm({ miner, onSave, onCancel }) {
   const [worker1, setWorker1] = useState(miner.worker1 || "");
@@ -14,27 +18,29 @@ function MinerEditForm({ miner, onSave, onCancel }) {
         e.preventDefault();
         onSave({ worker1, worker2, worker3, password: password || undefined });
       }}
-      style={{ display: "flex", flexDirection: "column", gap: "0.75rem", maxWidth: 400 }}
+      className="space-y-4 max-w-md"
     >
-      <div>
-        <label style={{ display: "block", marginBottom: "0.25rem" }}>Worker 1</label>
-        <input value={worker1} onChange={(e) => setWorker1(e.target.value)} style={{ width: "100%" }} />
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        <div className="space-y-2">
+          <label className="text-sm font-medium text-slate-400">Worker 1</label>
+          <Input value={worker1} onChange={(e) => setWorker1(e.target.value)} />
+        </div>
+        <div className="space-y-2">
+          <label className="text-sm font-medium text-slate-400">Worker 2</label>
+          <Input value={worker2} onChange={(e) => setWorker2(e.target.value)} />
+        </div>
+        <div className="space-y-2">
+          <label className="text-sm font-medium text-slate-400">Worker 3</label>
+          <Input value={worker3} onChange={(e) => setWorker3(e.target.value)} />
+        </div>
       </div>
-      <div>
-        <label style={{ display: "block", marginBottom: "0.25rem" }}>Worker 2</label>
-        <input value={worker2} onChange={(e) => setWorker2(e.target.value)} style={{ width: "100%" }} />
+      <div className="space-y-2">
+        <label className="text-sm font-medium text-slate-400">Password (leave blank to keep)</label>
+        <Input type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="••••••••" />
       </div>
-      <div>
-        <label style={{ display: "block", marginBottom: "0.25rem" }}>Worker 3</label>
-        <input value={worker3} onChange={(e) => setWorker3(e.target.value)} style={{ width: "100%" }} />
-      </div>
-      <div>
-        <label style={{ display: "block", marginBottom: "0.25rem" }}>Password (leave blank to keep)</label>
-        <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="••••••••" style={{ width: "100%" }} />
-      </div>
-      <div style={{ display: "flex", gap: "0.5rem" }}>
-        <button type="submit" className="primary">Save</button>
-        <button type="button" onClick={onCancel}>Cancel</button>
+      <div className="flex gap-2">
+        <Button type="submit">Save</Button>
+        <Button type="button" variant="outline" onClick={onCancel}>Cancel</Button>
       </div>
     </form>
   );
@@ -51,7 +57,7 @@ export default function FarmDetail() {
 
   const load = useCallback(() => {
     setError(null);
-    fetch(`${API}/farms/${farmId}`)
+    apiFetch(`/farms/${farmId}`)
       .then((r) => {
         if (!r.ok) throw new Error(r.status === 404 ? "Farm not found" : `Failed to load: ${r.status}`);
         return r.json();
@@ -74,7 +80,7 @@ export default function FarmDetail() {
 
   const addAgent = async () => {
     try {
-      const r = await fetch(`${API}/farms/${farmId}/agents`, { method: "POST" });
+      const r = await apiFetch(`/farms/${farmId}/agents`, { method: "POST" });
       const data = await r.json();
       load();
       if (data.token) {
@@ -91,7 +97,7 @@ export default function FarmDetail() {
     if (!farm?.agent?.id || scanning) return;
     setScanning(true);
     try {
-      const r = await fetch(`${API}/agents/${farm.agent.id}/scan`, { method: "POST" });
+      const r = await apiFetch(`/agents/${farm.agent.id}/scan`, { method: "POST" });
       const data = await r.json();
       setDiscovered(data.discovered || []);
       if (data.status === "queued") {
@@ -107,9 +113,8 @@ export default function FarmDetail() {
 
   const registerMiner = async (m) => {
     try {
-      await fetch(`${API}/agents/${farm.agent.id}/miners/register`, {
+      await apiFetch(`/agents/${farm.agent.id}/miners/register`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ miners: [{ mac: m.mac, ip: m.ip, model: m.model }] }),
       });
       setDiscovered((d) => d.filter((x) => x.mac !== m.mac));
@@ -121,7 +126,7 @@ export default function FarmDetail() {
 
   const restartMiner = async (minerId) => {
     try {
-      await fetch(`${API}/miners/${minerId}/restart`, { method: "POST" });
+      await apiFetch(`/miners/${minerId}/restart`, { method: "POST" });
       load();
     } catch (e) {
       console.error(e);
@@ -130,7 +135,7 @@ export default function FarmDetail() {
 
   const powerOffMiner = async (minerId) => {
     try {
-      await fetch(`${API}/miners/${minerId}/power_off`, { method: "POST" });
+      await apiFetch(`/miners/${minerId}/power_off`, { method: "POST" });
       load();
     } catch (e) {
       console.error(e);
@@ -139,9 +144,8 @@ export default function FarmDetail() {
 
   const updateMiner = async (minerId, data) => {
     try {
-      await fetch(`${API}/miners/${minerId}`, {
+      await apiFetch(`/miners/${minerId}`, {
         method: "PATCH",
-        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(data),
       });
       setEditingMiner(null);
@@ -158,136 +162,208 @@ export default function FarmDetail() {
     }
   };
 
-  if (loading) return <div>Loading...</div>;
-  if (error) return <div className="card"><p style={{ color: "#f87171" }}>{error}</p><Link to="/">← Back to Farms</Link></div>;
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center py-20">
+        <div className="animate-pulse text-slate-500">Loading...</div>
+      </div>
+    );
+  }
+  if (error) {
+    return (
+      <Card>
+        <CardContent className="pt-6">
+          <p className="text-red-400">{error}</p>
+          <Link to="/" className="inline-flex items-center gap-2 mt-4 text-sky-400 hover:text-sky-300">
+            <ArrowLeft className="h-4 w-4" />
+            Back to Farms
+          </Link>
+        </CardContent>
+      </Card>
+    );
+  }
   if (!farm) return null;
 
   return (
-    <div>
-      <div style={{ marginBottom: "1rem" }}>
-        <Link to="/">← Back to Farms</Link>
+    <div className="space-y-6">
+      <div className="flex items-center gap-4">
+        <Link
+          to="/"
+          className="inline-flex items-center gap-2 text-slate-400 hover:text-slate-200 transition-colors"
+        >
+          <ArrowLeft className="h-4 w-4" />
+          Back to Farms
+        </Link>
       </div>
 
-      <div className="card">
-        <h2 style={{ marginTop: 0 }}>{farm.name}</h2>
+      <div>
+        <h1 className="text-2xl font-semibold text-slate-100">{farm.name}</h1>
+      </div>
 
-        {!farm.agent ? (
-          <div>
-            <p>No agent registered.</p>
-            <button onClick={addAgent} className="primary">
-              Add Agent
-            </button>
-          </div>
-        ) : (
-          <div>
-            <h3>Agent</h3>
-            <p>Status: {farm.agent.last_seen ? "Last seen " + new Date(farm.agent.last_seen).toLocaleString() : "Unknown"}</p>
-            <div style={{ marginBottom: "1rem" }}>
-              <strong>Install:</strong>{" "}
-              <code style={{ fontSize: "0.75rem", wordBreak: "break-all" }}>{farm.agent.install_script || "curl ..."}</code>
-              <button onClick={copyInstall} style={{ marginLeft: "0.5rem" }}>
-                Copy
-              </button>
+      <Card>
+        <CardHeader>
+          <CardTitle>Agent</CardTitle>
+        </CardHeader>
+        <CardContent>
+          {!farm.agent ? (
+            <div className="space-y-4">
+              <p className="text-slate-400">No agent registered.</p>
+              <Button onClick={addAgent} className="gap-2">
+                <Plus className="h-4 w-4" />
+                Add Agent
+              </Button>
             </div>
-            <button onClick={scanForMiners} className="primary" disabled={scanning}>
-              {scanning ? "Scanning..." : "Scan for new miners"}
-            </button>
-          </div>
-        )}
-      </div>
+          ) : (
+            <div className="space-y-4">
+              <p className="text-sm text-slate-400">
+                Status: {farm.agent.last_seen ? "Last seen " + new Date(farm.agent.last_seen).toLocaleString() : "Unknown"}
+              </p>
+              <div className="flex flex-wrap items-center gap-2">
+                <code className="flex-1 min-w-0 text-xs text-slate-500 bg-slate-900/50 px-2 py-1.5 rounded truncate">
+                  {farm.agent.install_script || "curl ..."}
+                </code>
+                <Button variant="outline" size="sm" onClick={copyInstall} className="gap-1.5 shrink-0">
+                  <Copy className="h-4 w-4" />
+                  Copy
+                </Button>
+              </div>
+              <Button onClick={scanForMiners} disabled={scanning} className="gap-2">
+                <RefreshCw className={`h-4 w-4 ${scanning ? "animate-spin" : ""}`} />
+                {scanning ? "Scanning..." : "Scan for new miners"}
+              </Button>
+            </div>
+          )}
+        </CardContent>
+      </Card>
 
       {discovered.length > 0 && (
-        <div className="card">
-          <h3>Discovered Miners</h3>
-          <table>
-            <thead>
-              <tr>
-                <th>MAC</th>
-                <th>IP</th>
-                <th>Model</th>
-                <th>Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {discovered.map((m) => (
-                <tr key={m.mac}>
-                  <td>{m.mac}</td>
-                  <td>{m.ip}</td>
-                  <td>{m.model || "-"}</td>
-                  <td>
-                    {m.ip && (
-                      <a href={`http://${m.ip}`} target="_blank" rel="noreferrer" style={{ marginRight: "0.5rem" }}>
-                        Web UI
-                      </a>
-                    )}
-                    <button onClick={() => registerMiner(m)} className="primary">
-                      Register
-                    </button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+        <Card>
+          <CardHeader>
+            <CardTitle>Discovered Miners</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="overflow-x-auto">
+              <table className="w-full">
+                <thead>
+                  <tr className="border-b border-slate-700">
+                    <th className="text-left py-3 px-4 text-sm font-medium text-slate-400">MAC</th>
+                    <th className="text-left py-3 px-4 text-sm font-medium text-slate-400">IP</th>
+                    <th className="text-left py-3 px-4 text-sm font-medium text-slate-400">Model</th>
+                    <th className="text-left py-3 px-4 text-sm font-medium text-slate-400">Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {discovered.map((m) => (
+                    <tr key={m.mac} className="border-b border-slate-700/50 hover:bg-slate-800/30">
+                      <td className="py-3 px-4 text-slate-200">{m.mac}</td>
+                      <td className="py-3 px-4 text-slate-200">{m.ip}</td>
+                      <td className="py-3 px-4 text-slate-400">{m.model || "-"}</td>
+                      <td className="py-3 px-4">
+                        <div className="flex gap-2">
+                          {m.ip && (
+                            <a
+                              href={`http://${m.ip}`}
+                              target="_blank"
+                              rel="noreferrer"
+                              className="text-sky-400 hover:text-sky-300 text-sm"
+                            >
+                              Web UI
+                            </a>
+                          )}
+                          <Button size="sm" onClick={() => registerMiner(m)}>
+                            Register
+                          </Button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </CardContent>
+        </Card>
       )}
 
-      <div className="card">
-        <h3>Miners</h3>
-        {!farm.agent?.miners?.length ? (
-          <p>No miners. Scan for new miners above.</p>
-        ) : (
-          <>
-            <table>
-              <thead>
-                <tr>
-                  <th>MAC</th>
-                  <th>IP</th>
-                  <th>Model</th>
-                  <th>Web UI</th>
-                  <th>Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {farm.agent.miners.map((m) => (
-                  <tr key={m.id}>
-                    <td>{m.mac}</td>
-                    <td>{m.ip}</td>
-                    <td>{m.model || "-"}</td>
-                    <td>
-                      {m.ip ? (
-                        <a href={`http://${m.ip}`} target="_blank" rel="noreferrer">
-                          Open
-                        </a>
-                      ) : "-"}
-                    </td>
-                    <td>
-                      <button onClick={() => setEditingMiner(m)} style={{ marginRight: "0.5rem" }}>
-                        Edit
-                      </button>
-                      <button onClick={() => restartMiner(m.id)} style={{ marginRight: "0.5rem" }}>
-                        Restart
-                      </button>
-                      <button onClick={() => powerOffMiner(m.id)} className="danger" style={{ marginRight: "0.5rem" }}>
-                        Power Off
-                      </button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-            {editingMiner && (
-              <div className="card" style={{ marginTop: "1rem" }}>
-                <h4>Edit Miner {editingMiner.mac}</h4>
-                <MinerEditForm
-                  miner={editingMiner}
-                  onSave={(data) => updateMiner(editingMiner.id, data)}
-                  onCancel={() => setEditingMiner(null)}
-                />
+      <Card>
+        <CardHeader>
+          <CardTitle>Miners</CardTitle>
+        </CardHeader>
+        <CardContent>
+          {!farm.agent?.miners?.length ? (
+            <p className="text-slate-500 py-4">No miners. Scan for new miners above.</p>
+          ) : (
+            <>
+              <div className="overflow-x-auto">
+                <table className="w-full">
+                  <thead>
+                    <tr className="border-b border-slate-700">
+                      <th className="text-left py-3 px-4 text-sm font-medium text-slate-400">MAC</th>
+                      <th className="text-left py-3 px-4 text-sm font-medium text-slate-400">IP</th>
+                      <th className="text-left py-3 px-4 text-sm font-medium text-slate-400">Model</th>
+                      <th className="text-left py-3 px-4 text-sm font-medium text-slate-400">Web UI</th>
+                      <th className="text-left py-3 px-4 text-sm font-medium text-slate-400">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {farm.agent.miners.map((m) => (
+                      <tr key={m.id} className="border-b border-slate-700/50 hover:bg-slate-800/30">
+                        <td className="py-3 px-4 text-slate-200">{m.mac}</td>
+                        <td className="py-3 px-4 text-slate-200">{m.ip}</td>
+                        <td className="py-3 px-4 text-slate-400">{m.model || "-"}</td>
+                        <td className="py-3 px-4">
+                          {m.ip ? (
+                            <a
+                              href={`http://${m.ip}`}
+                              target="_blank"
+                              rel="noreferrer"
+                              className="inline-flex items-center gap-1 text-sky-400 hover:text-sky-300 text-sm"
+                            >
+                              <ExternalLink className="h-3.5 w-3.5" />
+                              Open
+                            </a>
+                          ) : (
+                            "-"
+                          )}
+                        </td>
+                        <td className="py-3 px-4">
+                          <div className="flex gap-2 flex-wrap">
+                            <Button variant="outline" size="sm" onClick={() => setEditingMiner(m)} className="gap-1">
+                              <Edit2 className="h-3.5 w-3.5" />
+                              Edit
+                            </Button>
+                            <Button variant="outline" size="sm" onClick={() => restartMiner(m.id)} className="gap-1">
+                              <RefreshCw className="h-3.5 w-3.5" />
+                              Restart
+                            </Button>
+                            <Button variant="destructive" size="sm" onClick={() => powerOffMiner(m.id)} className="gap-1">
+                              <PowerOff className="h-3.5 w-3.5" />
+                              Power Off
+                            </Button>
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
               </div>
-            )}
-          </>
-        )}
-      </div>
+              {editingMiner && (
+                <Card className="mt-6">
+                  <CardHeader>
+                    <CardTitle>Edit Miner {editingMiner.mac}</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <MinerEditForm
+                      miner={editingMiner}
+                      onSave={(data) => updateMiner(editingMiner.id, data)}
+                      onCancel={() => setEditingMiner(null)}
+                    />
+                  </CardContent>
+                </Card>
+              )}
+            </>
+          )}
+        </CardContent>
+      </Card>
     </div>
   );
 }

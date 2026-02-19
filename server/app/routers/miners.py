@@ -5,6 +5,8 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from pydantic import BaseModel
 
 from app.database import get_db
+from app.auth import get_current_user
+from app.models import User
 from app.services import miner_service
 from app.services.miner_service import get_miner_password
 from app.models import Miner, Command, CommandType, CommandStatus
@@ -38,6 +40,7 @@ async def list_miners(
     farm_id: int | None = Query(None),
     agent_id: int | None = Query(None),
     db: AsyncSession = Depends(get_db),
+    user: User = Depends(get_current_user),
 ):
     """List miners, optionally filtered by farm_id or agent_id."""
     miners = await miner_service.list_miners(db, farm_id=farm_id, agent_id=agent_id)
@@ -45,7 +48,11 @@ async def list_miners(
 
 
 @router.get("/{miner_id}")
-async def get_miner(miner_id: int, db: AsyncSession = Depends(get_db)):
+async def get_miner(
+    miner_id: int,
+    db: AsyncSession = Depends(get_db),
+    user: User = Depends(get_current_user),
+):
     """Get miner detail (includes web_ui_url)."""
     miner = await miner_service.get_miner_by_id(db, miner_id)
     if not miner:
@@ -56,7 +63,12 @@ async def get_miner(miner_id: int, db: AsyncSession = Depends(get_db)):
 
 
 @router.patch("/{miner_id}")
-async def update_miner(miner_id: int, data: MinerUpdate, db: AsyncSession = Depends(get_db)):
+async def update_miner(
+    miner_id: int,
+    data: MinerUpdate,
+    db: AsyncSession = Depends(get_db),
+    user: User = Depends(get_current_user),
+):
     """Update miner (worker, password)."""
     miner = await miner_service.get_miner_by_id(db, miner_id)
     if not miner:
@@ -96,7 +108,11 @@ def _broadcast_command(agent_id: int, miner: Miner, cmd_id: int, cmd_type: str):
 
 
 @router.post("/{miner_id}/restart")
-async def restart_miner(miner_id: int, db: AsyncSession = Depends(get_db)):
+async def restart_miner(
+    miner_id: int,
+    db: AsyncSession = Depends(get_db),
+    user: User = Depends(get_current_user),
+):
     """Trigger miner restart (queues command for agent)."""
     import asyncio
 
@@ -110,7 +126,11 @@ async def restart_miner(miner_id: int, db: AsyncSession = Depends(get_db)):
 
 
 @router.post("/{miner_id}/power_off")
-async def power_off_miner(miner_id: int, db: AsyncSession = Depends(get_db)):
+async def power_off_miner(
+    miner_id: int,
+    db: AsyncSession = Depends(get_db),
+    user: User = Depends(get_current_user),
+):
     """Power off miner (queues command for agent)."""
     miner = await miner_service.get_miner_by_id(db, miner_id)
     if not miner:
@@ -122,7 +142,11 @@ async def power_off_miner(miner_id: int, db: AsyncSession = Depends(get_db)):
 
 
 @router.post("/{miner_id}/power_on")
-async def power_on_miner(miner_id: int, db: AsyncSession = Depends(get_db)):
+async def power_on_miner(
+    miner_id: int,
+    db: AsyncSession = Depends(get_db),
+    user: User = Depends(get_current_user),
+):
     """Power on miner (queues command for agent)."""
     miner = await miner_service.get_miner_by_id(db, miner_id)
     if not miner:
@@ -134,7 +158,11 @@ async def power_on_miner(miner_id: int, db: AsyncSession = Depends(get_db)):
 
 
 @router.get("/{miner_id}/realtime")
-async def get_realtime(miner_id: int, db: AsyncSession = Depends(get_db)):
+async def get_realtime(
+    miner_id: int,
+    db: AsyncSession = Depends(get_db),
+    user: User = Depends(get_current_user),
+):
     """Get live miner status (queues get_realtime; agent will respond)."""
     miner = await miner_service.get_miner_by_id(db, miner_id)
     if not miner:
