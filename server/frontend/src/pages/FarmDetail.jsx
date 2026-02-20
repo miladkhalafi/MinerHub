@@ -22,20 +22,20 @@ function MinerEditForm({ miner, onSave, onCancel }) {
     >
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         <div className="space-y-2">
-          <label className="text-sm font-medium text-slate-400">Worker 1</label>
+          <label className="text-sm font-medium text-slate-600 dark:text-slate-400">Worker 1</label>
           <Input value={worker1} onChange={(e) => setWorker1(e.target.value)} />
         </div>
         <div className="space-y-2">
-          <label className="text-sm font-medium text-slate-400">Worker 2</label>
+          <label className="text-sm font-medium text-slate-600 dark:text-slate-400">Worker 2</label>
           <Input value={worker2} onChange={(e) => setWorker2(e.target.value)} />
         </div>
         <div className="space-y-2">
-          <label className="text-sm font-medium text-slate-400">Worker 3</label>
+          <label className="text-sm font-medium text-slate-600 dark:text-slate-400">Worker 3</label>
           <Input value={worker3} onChange={(e) => setWorker3(e.target.value)} />
         </div>
       </div>
       <div className="space-y-2">
-        <label className="text-sm font-medium text-slate-400">Password (leave blank to keep)</label>
+        <label className="text-sm font-medium text-slate-600 dark:text-slate-400">Password (leave blank to keep)</label>
         <Input type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="••••••••" />
       </div>
       <div className="flex gap-2">
@@ -224,7 +224,7 @@ export default function FarmDetail() {
       <Card>
         <CardContent className="pt-6">
           <p className="text-red-400">{error}</p>
-          <Link to="/" className="inline-flex items-center gap-2 mt-4 text-sky-400 hover:text-sky-300">
+          <Link to="/" className="inline-flex items-center gap-2 mt-4 text-sky-500 hover:text-sky-600 dark:text-sky-400 dark:hover:text-sky-300">
             <ArrowLeft className="h-4 w-4" />
             Back to Farms
           </Link>
@@ -239,7 +239,7 @@ export default function FarmDetail() {
       <div className="flex items-center gap-4">
         <Link
           to="/"
-          className="inline-flex items-center gap-2 text-slate-400 hover:text-slate-200 transition-colors"
+          className="inline-flex items-center gap-2 text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-slate-200 transition-colors"
         >
           <ArrowLeft className="h-4 w-4" />
           Back to Farms
@@ -261,7 +261,7 @@ export default function FarmDetail() {
           </form>
         ) : (
           <>
-            <h1 className="text-2xl font-semibold text-slate-100">{farm.name}</h1>
+            <h1 className="text-2xl font-semibold text-slate-900 dark:text-slate-100">{farm.name}</h1>
             <div className="flex gap-2">
               <Button variant="outline" size="sm" onClick={startEditFarm} className="gap-1.5">
                 <Edit2 className="h-3.5 w-3.5" />
@@ -283,7 +283,7 @@ export default function FarmDetail() {
         <CardContent>
           {!farm.agent ? (
             <div className="space-y-4">
-              <p className="text-slate-400">No agent registered.</p>
+              <p className="text-slate-600 dark:text-slate-400">No agent registered.</p>
               <Button onClick={addAgent} className="gap-2">
                 <Plus className="h-4 w-4" />
                 Add Agent
@@ -291,13 +291,13 @@ export default function FarmDetail() {
             </div>
           ) : (
             <div className="space-y-4">
-              <p className="text-sm text-slate-400">
+              <p className="text-sm text-slate-600 dark:text-slate-400">
                 Status: {farm.agent.last_seen ? "Last seen " + new Date(farm.agent.last_seen).toLocaleString() : "Unknown"}
               </p>
               <div className="space-y-2">
                 <div className="flex flex-wrap items-center gap-2">
-                  <span className="text-sm text-slate-400 shrink-0">Install:</span>
-                  <code className="flex-1 min-w-0 text-xs text-slate-500 bg-slate-900/50 px-2 py-1.5 rounded truncate">
+                  <span className="text-sm text-slate-600 dark:text-slate-400 shrink-0">Install:</span>
+                  <code className="flex-1 min-w-0 text-xs text-slate-600 dark:text-slate-500 bg-slate-100 dark:bg-slate-900/50 px-2 py-1.5 rounded truncate">
                     {farm.agent.install_script || "curl ..."}
                   </code>
                   <Button variant="outline" size="sm" onClick={copyInstall} className="gap-1.5 shrink-0">
@@ -306,8 +306,8 @@ export default function FarmDetail() {
                   </Button>
                 </div>
                 <div className="flex flex-wrap items-center gap-2">
-                  <span className="text-sm text-slate-400 shrink-0">Uninstall:</span>
-                  <code className="flex-1 min-w-0 text-xs text-slate-500 bg-slate-900/50 px-2 py-1.5 rounded truncate">
+                  <span className="text-sm text-slate-600 dark:text-slate-400 shrink-0">Uninstall:</span>
+                  <code className="flex-1 min-w-0 text-xs text-slate-600 dark:text-slate-500 bg-slate-100 dark:bg-slate-900/50 px-2 py-1.5 rounded truncate">
                     {farm.agent.uninstall_script || "curl ..."}
                   </code>
                   <Button variant="outline" size="sm" onClick={copyUninstall} className="gap-1.5 shrink-0">
@@ -334,19 +334,19 @@ export default function FarmDetail() {
             <div className="overflow-x-auto">
               <table className="w-full">
                 <thead>
-                  <tr className="border-b border-slate-700">
-                    <th className="text-left py-3 px-4 text-sm font-medium text-slate-400">MAC</th>
-                    <th className="text-left py-3 px-4 text-sm font-medium text-slate-400">IP</th>
-                    <th className="text-left py-3 px-4 text-sm font-medium text-slate-400">Model</th>
-                    <th className="text-left py-3 px-4 text-sm font-medium text-slate-400">Actions</th>
+                  <tr className="border-b border-slate-200 dark:border-slate-700">
+                    <th className="text-left py-3 px-4 text-sm font-medium text-slate-600 dark:text-slate-400">MAC</th>
+                    <th className="text-left py-3 px-4 text-sm font-medium text-slate-600 dark:text-slate-400">IP</th>
+                    <th className="text-left py-3 px-4 text-sm font-medium text-slate-600 dark:text-slate-400">Model</th>
+                    <th className="text-left py-3 px-4 text-sm font-medium text-slate-600 dark:text-slate-400">Actions</th>
                   </tr>
                 </thead>
                 <tbody>
                   {discovered.map((m) => (
-                    <tr key={m.mac} className="border-b border-slate-700/50 hover:bg-slate-800/30">
-                      <td className="py-3 px-4 text-slate-200">{m.mac}</td>
-                      <td className="py-3 px-4 text-slate-200">{m.ip}</td>
-                      <td className="py-3 px-4 text-slate-400">{m.model || "-"}</td>
+                    <tr key={m.mac} className="border-b border-slate-200 dark:border-slate-700/50 hover:bg-slate-50 dark:hover:bg-slate-800/30">
+                      <td className="py-3 px-4 text-slate-800 dark:text-slate-200">{m.mac}</td>
+                      <td className="py-3 px-4 text-slate-800 dark:text-slate-200">{m.ip}</td>
+                      <td className="py-3 px-4 text-slate-600 dark:text-slate-400">{m.model || "-"}</td>
                       <td className="py-3 px-4">
                         <div className="flex gap-2">
                           {m.ip && (
@@ -354,7 +354,7 @@ export default function FarmDetail() {
                               href={`http://${m.ip}`}
                               target="_blank"
                               rel="noreferrer"
-                              className="text-sky-400 hover:text-sky-300 text-sm"
+                              className="text-sky-500 hover:text-sky-600 dark:text-sky-400 dark:hover:text-sky-300 text-sm"
                             >
                               Web UI
                             </a>
@@ -379,33 +379,33 @@ export default function FarmDetail() {
         </CardHeader>
         <CardContent>
           {!farm.agent?.miners?.length ? (
-            <p className="text-slate-500 py-4">No miners. Scan for new miners above.</p>
+            <p className="text-slate-500 py-4 dark:text-slate-500">No miners. Scan for new miners above.</p>
           ) : (
             <>
               <div className="overflow-x-auto">
                 <table className="w-full">
-                  <thead>
-                    <tr className="border-b border-slate-700">
-                      <th className="text-left py-3 px-4 text-sm font-medium text-slate-400">MAC</th>
-                      <th className="text-left py-3 px-4 text-sm font-medium text-slate-400">IP</th>
-                      <th className="text-left py-3 px-4 text-sm font-medium text-slate-400">Model</th>
-                      <th className="text-left py-3 px-4 text-sm font-medium text-slate-400">Web UI</th>
-                      <th className="text-left py-3 px-4 text-sm font-medium text-slate-400">Actions</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {farm.agent.miners.map((m) => (
-                      <tr key={m.id} className="border-b border-slate-700/50 hover:bg-slate-800/30">
-                        <td className="py-3 px-4 text-slate-200">{m.mac}</td>
-                        <td className="py-3 px-4 text-slate-200">{m.ip}</td>
-                        <td className="py-3 px-4 text-slate-400">{m.model || "-"}</td>
+                <thead>
+                  <tr className="border-b border-slate-200 dark:border-slate-700">
+                    <th className="text-left py-3 px-4 text-sm font-medium text-slate-600 dark:text-slate-400">MAC</th>
+                    <th className="text-left py-3 px-4 text-sm font-medium text-slate-600 dark:text-slate-400">IP</th>
+                    <th className="text-left py-3 px-4 text-sm font-medium text-slate-600 dark:text-slate-400">Model</th>
+                    <th className="text-left py-3 px-4 text-sm font-medium text-slate-600 dark:text-slate-400">Web UI</th>
+                    <th className="text-left py-3 px-4 text-sm font-medium text-slate-600 dark:text-slate-400">Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {farm.agent.miners.map((m) => (
+                    <tr key={m.id} className="border-b border-slate-200 dark:border-slate-700/50 hover:bg-slate-50 dark:hover:bg-slate-800/30">
+                      <td className="py-3 px-4 text-slate-800 dark:text-slate-200">{m.mac}</td>
+                      <td className="py-3 px-4 text-slate-800 dark:text-slate-200">{m.ip}</td>
+                      <td className="py-3 px-4 text-slate-600 dark:text-slate-400">{m.model || "-"}</td>
                         <td className="py-3 px-4">
                           {m.ip ? (
                             <a
                               href={`http://${m.ip}`}
                               target="_blank"
                               rel="noreferrer"
-                              className="inline-flex items-center gap-1 text-sky-400 hover:text-sky-300 text-sm"
+                              className="inline-flex items-center gap-1 text-sky-500 hover:text-sky-600 dark:text-sky-400 dark:hover:text-sky-300 text-sm"
                             >
                               <ExternalLink className="h-3.5 w-3.5" />
                               Open

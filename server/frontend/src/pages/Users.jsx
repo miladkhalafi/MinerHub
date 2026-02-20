@@ -107,7 +107,7 @@ export default function Users() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-semibold text-slate-100">Users</h1>
+        <h1 className="text-2xl font-semibold text-slate-900 dark:text-slate-100">Users</h1>
         <p className="mt-1 text-sm text-slate-500">Manage dashboard users and roles</p>
       </div>
 
@@ -121,7 +121,7 @@ export default function Users() {
             className="flex flex-wrap gap-4 items-end"
           >
             <div className="min-w-[200px] space-y-2">
-              <label className="text-sm font-medium text-slate-400">Email</label>
+              <label className="text-sm font-medium text-slate-600 dark:text-slate-400">Email</label>
               <Input
                 type="email"
                 value={form.email}
@@ -131,7 +131,7 @@ export default function Users() {
               />
             </div>
             <div className="min-w-[140px] space-y-2">
-              <label className="text-sm font-medium text-slate-400">
+              <label className="text-sm font-medium text-slate-600 dark:text-slate-400">
                 Password {editing && "(leave blank to keep)"}
               </label>
               <Input
@@ -143,11 +143,11 @@ export default function Users() {
               />
             </div>
             <div className="min-w-[100px] space-y-2">
-              <label className="text-sm font-medium text-slate-400">Role</label>
+              <label className="text-sm font-medium text-slate-600 dark:text-slate-400">Role</label>
               <select
                 value={form.role}
                 onChange={(e) => setForm((f) => ({ ...f, role: e.target.value }))}
-                className="flex h-10 w-full rounded-md border border-slate-600 bg-slate-800 px-3 py-2 text-sm text-slate-100 focus:outline-none focus:ring-2 focus:ring-sky-500"
+                className="flex h-10 w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-sky-500"
               >
                 <option value="user">User</option>
                 <option value="admin">Admin</option>
@@ -185,18 +185,18 @@ export default function Users() {
           <div className="overflow-x-auto">
             <table className="w-full">
               <thead>
-                <tr className="border-b border-slate-700">
-                  <th className="text-left py-3 px-4 text-sm font-medium text-slate-400">Email</th>
-                  <th className="text-left py-3 px-4 text-sm font-medium text-slate-400">Role</th>
-                  <th className="text-left py-3 px-4 text-sm font-medium text-slate-400">Actions</th>
+                <tr className="border-b border-slate-200 dark:border-slate-700">
+                  <th className="text-left py-3 px-4 text-sm font-medium text-slate-600 dark:text-slate-400">Email</th>
+                  <th className="text-left py-3 px-4 text-sm font-medium text-slate-600 dark:text-slate-400">Role</th>
+                  <th className="text-left py-3 px-4 text-sm font-medium text-slate-600 dark:text-slate-400">Actions</th>
                 </tr>
               </thead>
               <tbody>
                 {users.map((u) => (
-                  <tr key={u.id} className="border-b border-slate-700/50 hover:bg-slate-800/30">
-                    <td className="py-3 px-4 text-slate-200">{u.email}</td>
+                  <tr key={u.id} className="border-b border-slate-200 dark:border-slate-700/50 hover:bg-slate-50 dark:hover:bg-slate-800/30">
+                    <td className="py-3 px-4 text-slate-800 dark:text-slate-200">{u.email}</td>
                     <td className="py-3 px-4">
-                      <span className="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium bg-slate-700/50 text-slate-300">
+                      <span className="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium bg-slate-200 text-slate-700 dark:bg-slate-700/50 dark:text-slate-300">
                         {u.role}
                       </span>
                     </td>

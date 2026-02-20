@@ -39,12 +39,12 @@ export default function Login() {
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">
             {error && (
-              <div className="rounded-md bg-red-500/10 border border-red-500/20 px-3 py-2 text-sm text-red-400">
+              <div className="rounded-md bg-red-500/10 border border-red-500/20 px-3 py-2 text-sm text-red-600 dark:text-red-400">
                 {error}
               </div>
             )}
             <div className="space-y-2">
-              <label className="text-sm font-medium text-slate-400">Email</label>
+              <label className="text-sm font-medium text-slate-600 dark:text-slate-400">Email</label>
               <Input
                 type="email"
                 value={email}
@@ -55,7 +55,7 @@ export default function Login() {
               />
             </div>
             <div className="space-y-2">
-              <label className="text-sm font-medium text-slate-400">Password</label>
+              <label className="text-sm font-medium text-slate-600 dark:text-slate-400">Password</label>
               <Input
                 type="password"
                 value={password}

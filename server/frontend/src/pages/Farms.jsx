@@ -84,7 +84,7 @@ export default function Farms() {
   if (loading) {
     return (
       <div className="flex items-center justify-center py-20">
-        <div className="animate-pulse text-slate-500">Loading farms...</div>
+        <div className="animate-pulse text-slate-500 dark:text-slate-500">Loading farms...</div>
       </div>
     );
   }
@@ -92,7 +92,7 @@ export default function Farms() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-semibold text-slate-100">Farms</h1>
+        <h1 className="text-2xl font-semibold text-slate-900 dark:text-slate-100">Farms</h1>
         <p className="mt-1 text-sm text-slate-500">Manage your mining farms and agents</p>
       </div>
 
@@ -103,7 +103,7 @@ export default function Farms() {
         <CardContent>
           <form onSubmit={createFarm} className="flex gap-3 flex-wrap items-end">
             <div className="flex-1 min-w-[200px] space-y-2">
-              <label className="text-sm font-medium text-slate-400">Farm name</label>
+              <label className="text-sm font-medium text-slate-600 dark:text-slate-400">Farm name</label>
               <Input
                 placeholder="e.g. North Warehouse"
                 value={name}
@@ -128,11 +128,11 @@ export default function Farms() {
               No farms yet. Add one above to get started.
             </div>
           ) : (
-            <div className="divide-y divide-slate-700/50">
+            <div className="divide-y divide-slate-200 dark:divide-slate-700/50">
               {farms.map((f) => (
                 <div
                   key={f.id}
-                  className="flex items-center justify-between gap-4 py-4 hover:bg-slate-800/30 -mx-2 px-2 rounded-md transition-colors group"
+                  className="flex items-center justify-between gap-4 py-4 hover:bg-slate-50 dark:hover:bg-slate-800/30 -mx-2 px-2 rounded-md transition-colors group"
                 >
                   {editingId === f.id ? (
                     <form onSubmit={saveEdit} className="flex gap-2 flex-1">
@@ -152,8 +152,8 @@ export default function Farms() {
                         to={`/farms/${f.id}`}
                         className="flex items-center gap-2 flex-1 min-w-0"
                       >
-                        <span className="font-medium text-slate-200 group-hover:text-sky-400 transition-colors truncate">{f.name}</span>
-                        <ChevronRight className="h-5 w-5 text-slate-500 group-hover:text-sky-400 transition-colors shrink-0" />
+                        <span className="font-medium text-slate-800 dark:text-slate-200 group-hover:text-sky-500 dark:group-hover:text-sky-400 transition-colors truncate">{f.name}</span>
+                        <ChevronRight className="h-5 w-5 text-slate-500 group-hover:text-sky-500 dark:group-hover:text-sky-400 transition-colors shrink-0" />
                       </Link>
                       <div className="flex gap-2 shrink-0" onClick={(e) => e.preventDefault()}>
                         <Button
