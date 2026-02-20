@@ -28,7 +28,7 @@ function Nav() {
           to="/"
           className="flex items-center gap-2 text-lg font-semibold text-slate-100 hover:text-sky-400 transition-colors"
         >
-          <img src="/logo.svg" alt="MinerHub" className="h-8" />
+          <img src="/logo.png" alt="MinerHub" className="h-8" />
           Miner Agent
         </Link>
         {user && (
